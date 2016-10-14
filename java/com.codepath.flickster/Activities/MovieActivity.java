@@ -1,17 +1,24 @@
 package com.codepath.flickster.Activities;
 
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.codepath.flickster.Models.Movie;
 import com.codepath.flickster.R;
 import com.codepath.flickster.adapters.MovieArrayAdapter;
+
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,9 +27,10 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 public class MovieActivity extends AppCompatActivity {
-    ArrayList<Movie> movies;
-    MovieArrayAdapter movieArrayAdapter;
-    ListView moviesViewer;
+    private ArrayList<Movie> movies;
+    private MovieArrayAdapter movieArrayAdapter;
+    private ListView moviesViewer;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +40,41 @@ public class MovieActivity extends AppCompatActivity {
         movies = new ArrayList<>();
         movieArrayAdapter = new MovieArrayAdapter(this, movies);
         moviesViewer.setAdapter(movieArrayAdapter);
-        String moviesUrl = getResources().getString(R.string.movies_url);
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        fetchMoviesList();
+        /*moviesViewer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent myIntent = new Intent( view.getContext(), MovieDetailActivity.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });*/
+
+        swipeContainer.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchMoviesList();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+    }
+
+    public void fetchMoviesList() {
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(moviesUrl, new JsonHttpResponseHandler(){
+        String moviesUrl = getResources().getString(R.string.movies_url);
+        client.get(moviesUrl, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                //JSONArray movieJsonResults = null;
                 try {
-                    //movieJsonResults = response.getJSONArray("results");
+                    movieArrayAdapter.clear();
                     movies.addAll(Movie.getMoviesFromJSONArray(response.getJSONArray(getResources().getString(R.string.results))));
                     movieArrayAdapter.notifyDataSetChanged();
-                    Log.d("DEBUG",movies.toString());
+                    swipeContainer.setRefreshing(false);
+                    Log.d("DEBUG", movies.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
