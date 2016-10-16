@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.codepath.flickster.Models.Movie;
@@ -37,15 +38,34 @@ public class MovieActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
         moviesViewer = (ListView) findViewById(R.id.moviesViewer);
+        moviesViewer.setItemsCanFocus(true);
         movies = new ArrayList<>();
         movieArrayAdapter = new MovieArrayAdapter(this, movies);
         moviesViewer.setAdapter(movieArrayAdapter);
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+
         fetchMoviesList();
-        /*moviesViewer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        moviesViewer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent myIntent = new Intent( view.getContext(), MovieDetailActivity.class);
+                Movie selectedMovie = (Movie)parent.getAdapter().getItem(position);
+                myIntent.putExtra("movieTitle", selectedMovie.getMovieTitle());
+                myIntent.putExtra("movieOverview", selectedMovie.getOverview());
+                myIntent.putExtra("movieBackdrop", selectedMovie.getBackdropPath());
+                myIntent.putExtra("movieReleaseDate", selectedMovie.getReleaseDate());
+                myIntent.putExtra("movieRating", selectedMovie.getStars());
+                myIntent.putExtra("movieId", selectedMovie.getMovieId());
+                startActivityForResult(myIntent, 0);
+            }
+        });
+        //To check if video can be played by clicking of list view item
+        /*moviesViewer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent myIntent = new Intent( view.getContext(), QuickPlayActivity.class);
+                Movie selectedMovie = (Movie)parent.getAdapter().getItem(position);
+                myIntent.putExtra("movieId", selectedMovie.getMovieId());
                 startActivityForResult(myIntent, 0);
             }
         });*/
@@ -86,4 +106,5 @@ public class MovieActivity extends AppCompatActivity {
             }
         });
     }
+
 }
