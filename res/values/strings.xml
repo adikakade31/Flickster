@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Flickster</string>
     <string name="movies_url">https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed</string>
+    <string name="trailer_url_prefix">https://api.themoviedb.org/3/movie/</string>
+    <string name="trailer_url_suffix">/trailers?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed</string>
     <string name="results">results</string>
+    <string name="youtube">youtube</string>
 </resources>
