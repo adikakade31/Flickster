@@ -1,7 +1,6 @@
 package com.codepath.flickster.Models;
 
-import com.codepath.flickster.CommonUtils.CommonConstants;
-import com.codepath.flickster.CommonUtils.PopularityStatus;
+import com.codepath.flickster.CommonUtils.ViewHolderType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,20 +15,24 @@ import java.util.ArrayList;
 
 public class Movie {
 
-    private final int POPULARITY_THRESHOLD = 5;
+    private final float POPULARITY_THRESHOLD = 5;
 
     private String posterPath;
     private String backdropPath;
     private String movieTitle;
     private String overview;
-    private int stars;
+    private String releaseDate;
+    private float stars;
+    private int movieId;
 
     public Movie(JSONObject jsonObject) throws JSONException{
         this.posterPath = jsonObject.getString("poster_path");
         this.backdropPath = jsonObject.getString("backdrop_path");
         this.movieTitle = jsonObject.getString("original_title");
         this.overview = jsonObject.getString("overview");
-        this.stars = jsonObject.getInt("vote_average");
+        this.stars = Float.valueOf(String.valueOf(jsonObject.getDouble("vote_average")));;
+        this.releaseDate = jsonObject.getString("release_date");
+        this.movieId = jsonObject.getInt("id");
     }
 
     public static ArrayList<Movie> getMoviesFromJSONArray(JSONArray jsonArray){
@@ -44,11 +47,11 @@ public class Movie {
         return movieResults;
     }
 
-    public PopularityStatus getPopularity() {
+    public ViewHolderType getPopularity() {
         if (this.stars >= POPULARITY_THRESHOLD) {
-            return PopularityStatus.POPULAR;
+            return ViewHolderType.WITHOUT_DETAILS;
         }
-        return PopularityStatus.UNPOPULAR;
+        return ViewHolderType.WITH_DETAILS;
     }
 
     public String getPosterPath() {
@@ -67,7 +70,11 @@ public class Movie {
         return overview;
     }
 
-    public int getStars(){
+    public float getStars(){
         return stars;
     }
+
+    public String getReleaseDate(){return releaseDate;}
+
+    public int getMovieId(){return movieId;}
 }
