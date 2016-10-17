@@ -38,9 +38,8 @@ public class QuickPlayActivity extends YouTubeBaseActivity {
                     public void onInitializationSuccess(YouTubePlayer.Provider provider,
                                                         YouTubePlayer youTubePlayer, boolean b) {
 
-                        // do any work here to cue video, play video, etc.
                         youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
-                        youTubePlayer.loadVideo("5xVh-7ywKpE");
+                        youTubePlayer.loadVideo("hM_1oO5190g");
                         //youTubePlayer.loadVideo(fetchTrailerYouTubeUrl(movieId));
                     }
                     @Override
