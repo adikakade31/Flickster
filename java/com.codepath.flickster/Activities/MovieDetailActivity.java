@@ -1,12 +1,11 @@
 package com.codepath.flickster.Activities;
 
-import android.app.Activity;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.ImageView;
+
 import android.widget.RatingBar;
+
 import android.widget.TextView;
 
 import com.codepath.flickster.Models.Movie;
@@ -17,7 +16,7 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.squareup.picasso.Picasso;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,34 +30,38 @@ public class MovieDetailActivity extends YouTubeBaseActivity {
 
     public static final String YouTubeAPIKey = "AIzaSyAxnWi-q-bDtahHf1nS7XitbxAIHC1x-rwE";
     private String youTubeTrailerSource;
+    private int movieId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        movieId = intent.getIntExtra("movieId",0);
+        Movie movie = Movie.getMovieForId(movieId);
+
         setContentView(R.layout.activity_movie_detail);
+
         TextView movieTitle = (TextView) findViewById(R.id.detailMovieTitle);
         TextView movieOverview = (TextView)findViewById(R.id.detailMovieOverview);
         TextView movieReleaseDate = (TextView) findViewById(R.id.detailMovieReleaseDate);
-        //ImageView movieBackdrop = (ImageView) findViewById(R.id.detailMoviePoster);
         RatingBar movieRatingBar = (RatingBar) findViewById(R.id.movieRatingBar);
         YouTubePlayerView youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtubePlayer);
-        Intent intent = getIntent();
-        movieTitle.setText(intent.getStringExtra("movieTitle"));
-        movieOverview.setText(intent.getStringExtra("movieOverview"));
-        movieReleaseDate.setText("Release Date: "+intent.getStringExtra("movieReleaseDate"));
-        //Picasso.with(getApplicationContext()).load(intent.getStringExtra("movieBackdrop")).placeholder( R.drawable.progress_animation ).into(movieBackdrop);
-        movieRatingBar.setRating(intent.getFloatExtra("movieRating", 0)/2);
-        final int movieId = intent.getIntExtra("movieId",0);
+
+        movieTitle.setText(movie.getMovieTitle());
+        movieOverview.setText(movie.getOverview());
+        movieReleaseDate.setText("Release Date: "+ movie.getReleaseDate());
+        movieRatingBar.setRating(movie.getStars()/2);
+
         youTubePlayerView.initialize(YouTubeAPIKey,
                 new YouTubePlayer.OnInitializedListener() {
                     @Override
                     public void onInitializationSuccess(YouTubePlayer.Provider provider,
                                                         YouTubePlayer youTubePlayer, boolean b) {
 
-                        // do any work here to cue video, play video, etc.
-                        //youTubePlayer.cueVideo("5xVh-7ywKpE");
+                        youTubePlayer.cueVideo("hM_1oO5190g");
                         youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
-                        youTubePlayer.cueVideo(fetchTrailerYouTubeUrl(movieId));
+                        //youTubePlayer.cueVideo(fetchTrailerYouTubeUrl(movieId));
                     }
                     @Override
                     public void onInitializationFailure(YouTubePlayer.Provider provider,
@@ -76,7 +79,6 @@ public class MovieDetailActivity extends YouTubeBaseActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
-
                     JSONObject jsonObject= response.getJSONArray(getResources().getString(R.string.youtube)).getJSONObject(0);
                     youTubeTrailerSource =  jsonObject.getString("source");
                 } catch (JSONException e) {
