@@ -59,9 +59,9 @@ public class MovieDetailActivity extends YouTubeBaseActivity {
                     public void onInitializationSuccess(YouTubePlayer.Provider provider,
                                                         YouTubePlayer youTubePlayer, boolean b) {
 
-                        youTubePlayer.cueVideo("hM_1oO5190g");
+                        //youTubePlayer.cueVideo("hM_1oO5190g");
                         youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
-                        //youTubePlayer.cueVideo(fetchTrailerYouTubeUrl(movieId));
+                        youTubePlayer.cueVideo(fetchTrailerYouTubeUrl(movieId));
                     }
                     @Override
                     public void onInitializationFailure(YouTubePlayer.Provider provider,
