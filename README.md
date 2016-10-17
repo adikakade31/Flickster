@@ -36,11 +36,11 @@ The following **bonus** features are implemented:
 Here's a walkthrough of implemented user stories:
 -Portrait View
 
-<img src='https://cloud.githubusercontent.com/assets/22045135/19423750/4d0d5286-93d8-11e6-8e97-a129565064a3.gif' title='Video Walkthrough-Portrait' width='' alt='Video Walkthrough' />
+<img src='https://cloud.githubusercontent.com/assets/22045135/19459321/ca3a6434-9486-11e6-9559-2fe839100e8a.gif' title='Video Walkthrough-Portrait' width='' alt='Video Walkthrough' />
 
 -Landscape View
 
-<img src='https://cloud.githubusercontent.com/assets/22045135/19423773/84daf95c-93d8-11e6-88e8-196a7710cf8d.gif' title='Video Walkthrough-Portrait' width='' alt='Video Walkthrough' />
+<img src='https://cloud.githubusercontent.com/assets/22045135/19459355/0d982d92-9487-11e6-945c-8f4dc3ef90db.gif' title='Video Walkthrough-Portrait' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
