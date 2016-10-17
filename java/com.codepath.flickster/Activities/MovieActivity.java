@@ -1,16 +1,14 @@
 package com.codepath.flickster.Activities;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.codepath.flickster.Models.Movie;
@@ -59,16 +57,6 @@ public class MovieActivity extends AppCompatActivity {
                 startActivityForResult(myIntent, 0);
             }
         });
-        //To check if video can be played by clicking of list view item
-        /*moviesViewer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent myIntent = new Intent( view.getContext(), QuickPlayActivity.class);
-                Movie selectedMovie = (Movie)parent.getAdapter().getItem(position);
-                myIntent.putExtra("movieId", selectedMovie.getMovieId());
-                startActivityForResult(myIntent, 0);
-            }
-        });*/
 
         swipeContainer.setOnRefreshListener(new OnRefreshListener() {
             @Override
