@@ -19,19 +19,6 @@
     android:overScrollMode="ifContentScrolls"
 
     >
-    <!--<ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="fitXY"
-        android:adjustViewBounds="true"
-        android:id="@+id/detailMoviePoster"
-        tools:src="@mipmap/ic_launcher"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:dividerHeight="5dp"
-        android:layout_alignRight="@+id/detailMovieOverview"
-        android:layout_alignEnd="@+id/detailMovieOverview" />-->
 
     <com.google.android.youtube.player.YouTubePlayerView
         android:id="@+id/youtubePlayer"
