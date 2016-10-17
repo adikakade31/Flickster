@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +12,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codepath.flickster.Activities.MovieDetailActivity;
 import com.codepath.flickster.Activities.QuickPlayActivity;
 import com.codepath.flickster.CommonUtils.ViewHolderType;
 import com.codepath.flickster.Models.Movie;
 import com.codepath.flickster.R;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -32,17 +31,14 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
     private int screenOrientation;
 
+
     public MovieArrayAdapter(Context context, List<Movie> movies) {
         super(context, android.R.layout.simple_list_item_1, movies);
     }
 
     @Override
     public int getItemViewType(int position) {
-        //super.getItemViewType(position);
-        if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return ViewHolderType.WITH_DETAILS.ordinal();
-        }
-        return getItem(position).getPopularity().ordinal();
+        return getItem(position).getViewHolderType().ordinal();
     }
 
     @Override
@@ -52,85 +48,93 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Movie movie = getItem(position);
-        final int movieId = movie.getMovieId();
+        final int movieId = getItem(position).getMovieId();
         //Get the current screen orientation( Portrait-1 or Landscape-2)
         screenOrientation = parent.getResources().getConfiguration().orientation;
         ViewHolderType viewHolderType = ViewHolderType.values()[getItemViewType(position)];
         switch(viewHolderType) {
             case WITHOUT_DETAILS:
-                IMovieViewHolderWithoutDetails movieViewHolderWithoutDetails;
+                MovieViewHolderWithoutDetails movieViewHolderWithoutDetails;
                 if(convertView == null) {
                     movieViewHolderWithoutDetails = new MovieViewHolderWithoutDetails();
                     convertView = getInflatedLayoutForType(getItemViewType(position));
-                    movieViewHolderWithoutDetails.setMoviePosterHolder((ImageView) convertView.findViewById(R.id.moviePoster));
-                    //movieViewHolderWithoutDetails.moviePosterHolder.setImageResource(0);
-                    //For playing video from list automatically
-                    movieViewHolderWithoutDetails.setPlayVideo((ImageButton) convertView.findViewById(R.id.play_button), position, movieId, getContext());
-                    //movieViewHolderWithoutDetails.playVideo.setTag(position);
-                    //Ends
+                    movieViewHolderWithoutDetails.setMoviePosterHolder(
+                            (ImageView) convertView.findViewById(R.id.moviePoster)
+                    );
+                    movieViewHolderWithoutDetails.setPlayVideo(
+                            (ImageButton) convertView.findViewById(R.id.play_button),
+                            position
+                    );
+                    movieViewHolderWithoutDetails.setShowDetails(
+                            (ImageButton) convertView.findViewById(R.id.show_details),
+                            position
+                    );
                     convertView.setTag(movieViewHolderWithoutDetails);
                 } else {
-                    movieViewHolderWithoutDetails = (IMovieViewHolderWithoutDetails) convertView.getTag();
+                    movieViewHolderWithoutDetails =
+                            (MovieViewHolderWithoutDetails) convertView.getTag();
                 }
-                /*movieViewHolderWithoutDetails.playVideo.setOnClickListener(new View.OnClickListener() {
+                movieViewHolderWithoutDetails.getPlayVideo().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent myIntent = new Intent(view.getContext(), QuickPlayActivity.class);
                         myIntent.putExtra("movieId", movieId);
                         ((Activity)getContext()).startActivityForResult(myIntent, 0);
                     }
-                });*/
-                Picasso.with(getContext()).load(movie.getBackdropPath()).placeholder( R.drawable.progress_animation ).into(movieViewHolderWithoutDetails.getMoviePosterHolder());
+                });
+                movieViewHolderWithoutDetails.getShowDetails().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent myIntent = new Intent(view.getContext(), MovieDetailActivity.class);
+                        myIntent.putExtra("movieId", movieId);
+                        ((Activity)getContext()).startActivityForResult(myIntent, 0);
+                    }
+                });
+                Picasso
+                        .with(getContext())
+                        .load(Movie.getMovieForId(movieId).getBackdropPath())
+                        .placeholder(R.drawable.progress_animation)
+                        .into(movieViewHolderWithoutDetails.getMoviePosterHolder());
                 break;
 
             case WITH_DETAILS:
-                IMovieViewHolderWithDetails movieViewHolderWithDetails;
+                MovieViewHolderWithDetails movieViewHolderWithDetails;
                 if(convertView == null) {
                     movieViewHolderWithDetails = new MovieViewHolderWithDetails();
                     convertView = getInflatedLayoutForType(getItemViewType(position));
-                    movieViewHolderWithDetails.setMoviePosterHolder((ImageView) convertView.findViewById(R.id.moviePoster));
-                    //movieViewHolderWithDetails.setMoviePosterHolder(moviePosterHolder.setImageResource(0));
-                    movieViewHolderWithDetails.setMovieTitleHolder((TextView) convertView.findViewById(R.id.movieTitle));
-                    movieViewHolderWithDetails.setMovieOverviewHolder((TextView) convertView.findViewById(R.id.movieOverview));
+                    movieViewHolderWithDetails.setMoviePosterHolder(
+                            (ImageView) convertView.findViewById(R.id.moviePoster)
+                    );
+                    movieViewHolderWithDetails.setMovieTitleHolder(
+                            (TextView) convertView.findViewById(R.id.movieTitle)
+                    );
+                    movieViewHolderWithDetails.setMovieOverviewHolder(
+                            (TextView) convertView.findViewById(R.id.movieOverview)
+                    );
                     convertView.setTag(movieViewHolderWithDetails);
-                }else {
-                    movieViewHolderWithDetails = (IMovieViewHolderWithDetails) convertView.getTag();
+                } else {
+                    movieViewHolderWithDetails = (MovieViewHolderWithDetails) convertView.getTag();
                 }
-                movieViewHolderWithDetails.getMovieTitleHolder().setText(movie.getMovieTitle());
-                movieViewHolderWithDetails.getMovieOverviewHolder().setText(movie.getOverview());
+                movieViewHolderWithDetails.getMovieTitleHolder().setText(Movie.getMovieForId(movieId).getMovieTitle());
+                movieViewHolderWithDetails.getMovieOverviewHolder().setText(Movie.getMovieForId(movieId).getOverview());
                 String movieBannerPath = null;
                 if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
-                    //portrait mode
-                    movieBannerPath = movie.getPosterPath();
-                    } else if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    //landscape mode
-                    movieBannerPath = movie.getBackdropPath();
-                    }
-                Picasso.with(getContext()).load(movieBannerPath).placeholder(R.drawable.progress_animation).into(movieViewHolderWithDetails.getMoviePosterHolder());
+                    movieBannerPath = Movie.getMovieForId(movieId).getPosterPath();
+                } else if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    movieBannerPath = Movie.getMovieForId(movieId).getBackdropPath();
+                }
+                Picasso
+                        .with(getContext())
+                        .load(movieBannerPath)
+                        .placeholder(R.drawable.progress_animation)
+                        .into(movieViewHolderWithDetails.getMoviePosterHolder());
                 break;
-
         }
         return convertView;
-
     }
 
-    private static interface IMovieViewHolderWithDetails {
-        public void setMoviePosterHolder(ImageView imageView);
-        public void setMovieTitleHolder(TextView textview);
-        public void setMovieOverviewHolder(TextView textView);
-        public TextView getMovieTitleHolder();
-        public TextView getMovieOverviewHolder();
-        public ImageView getMoviePosterHolder();
-    }
-    private static interface IMovieViewHolderWithoutDetails {
-        public void setMoviePosterHolder(ImageView imageView);
-        public void setPlayVideo(ImageButton imageButton, int position, final int movieID, final Context context);
-        public ImageView getMoviePosterHolder();
-    }
 
-    private static class MovieViewHolderWithDetails
-            implements IMovieViewHolderWithDetails, IMovieViewHolderWithoutDetails {
+    private static class MovieViewHolderWithDetails {
         TextView movieTitleHolder;
         TextView movieOverviewHolder;
         ImageView moviePosterHolder;
@@ -144,69 +148,52 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
         public void setMovieOverviewHolder(TextView textView) {
             movieOverviewHolder = textView;
         }
-
         public ImageView getMoviePosterHolder() {
             return moviePosterHolder;
         }
-
         public TextView getMovieTitleHolder() {
             return movieTitleHolder;
         }
         public TextView getMovieOverviewHolder() {
             return movieOverviewHolder;
         }
-
-        public void setPlayVideo(ImageButton imageButton, int position, final int movieID,  final Context context) {}
     }
 
-    private static class MovieViewHolderWithoutDetails
-            implements IMovieViewHolderWithDetails, IMovieViewHolderWithoutDetails {
+    private static class MovieViewHolderWithoutDetails {
         ImageView moviePosterHolder;
         ImageButton playVideo;
+        ImageButton showDetails;
         public void setMoviePosterHolder(ImageView imageView) {
             moviePosterHolder = imageView;
             moviePosterHolder.setImageResource(0);
         }
-
-        public TextView getMovieTitleHolder() {
-            return null;
-        }
-        public TextView getMovieOverviewHolder() {
-            return null;
-        }
-
         public ImageView getMoviePosterHolder() {
             return moviePosterHolder;
         }
-
-        public void setMovieTitleHolder(TextView textview) {
-
-        }
-        public void setMovieOverviewHolder(TextView textView) {
-
-
-        }
-        public void setPlayVideo(ImageButton imageButton, int position, final int movieId1, final Context context) {
+        public void setPlayVideo(ImageButton imageButton, int position) {
             playVideo = imageButton;
-            playVideo.setTag(position);
-            playVideo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent myIntent = new Intent(view.getContext(), QuickPlayActivity.class);
-                    myIntent.putExtra("movieId", movieId1);
-                    ((Activity)context).startActivityForResult(myIntent, 0);
-                }
-            });
+           // playVideo.setTag(position);
+        }
+
+        public ImageButton getPlayVideo() {
+            return playVideo;
+        }
+
+        public ImageButton getShowDetails() {
+            return showDetails;
+        }
+
+        public void setShowDetails(ImageButton imageButton, int position) {
+            showDetails = imageButton;
+           // showDetails.setTag(position);
         }
     }
-
     private View getInflatedLayoutForType(int type) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         if(type == ViewHolderType.WITHOUT_DETAILS.ordinal()){
             return inflater.inflate(R.layout.item_popular_movie, null);
-        }else{
+        } else {
             return inflater.inflate(R.layout.item_movie, null);
         }
     }
-
 }
