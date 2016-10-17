@@ -29,32 +29,31 @@ public class QuickPlayActivity extends YouTubeBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_play);
+
         YouTubePlayerView youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtubePlayer);
         Intent intent = getIntent();
         final int movieId = intent.getIntExtra("movieId",0);
+
         youTubePlayerView.initialize(YouTubeAPIKey,
                 new YouTubePlayer.OnInitializedListener() {
                     @Override
                     public void onInitializationSuccess(YouTubePlayer.Provider provider,
                                                         YouTubePlayer youTubePlayer, boolean b) {
-
-                        youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
-                        //youTubePlayer.loadVideo("hM_1oO5190g");
-                        youTubePlayer.loadVideo(fetchTrailerYouTubeUrl(movieId));
+                        playVideo(youTubePlayer, movieId);
                     }
                     @Override
                     public void onInitializationFailure(YouTubePlayer.Provider provider,
                                                         YouTubeInitializationResult youTubeInitializationResult) {
-
                     }
                 });
     }
-    private String fetchTrailerYouTubeUrl(int movieId){
+
+    private void playVideo(final YouTubePlayer youTubePlayer, int movieId){
 
         AsyncHttpClient client = new AsyncHttpClient();
-        String trailerURLPrefix = getResources().getString(R.string.trailer_url_prefix);
-        String trailerURLSuffix = getResources().getString(R.string.trailer_url_suffix);
-        String trailerURL = trailerURLPrefix + String.valueOf(movieId) + trailerURLSuffix;
+        String trailerURL = String.format("%s%s%s",getResources().getString(R.string.trailer_url_prefix)
+                ,String.valueOf(movieId)
+                ,getResources().getString(R.string.trailer_url_suffix));
         client.get(trailerURL, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -62,6 +61,7 @@ public class QuickPlayActivity extends YouTubeBaseActivity {
 
                     JSONObject jsonObject= response.getJSONArray(getResources().getString(R.string.youtube)).getJSONObject(0);
                     youTubeTrailerSource =  jsonObject.getString("source");
+                    youTubePlayer.loadVideo(youTubeTrailerSource);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -72,6 +72,6 @@ public class QuickPlayActivity extends YouTubeBaseActivity {
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
-        return youTubeTrailerSource;
+
     }
 }
