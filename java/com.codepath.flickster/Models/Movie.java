@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by aditikakadebansal on 10/11/16.
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 public class Movie {
 
     private final float POPULARITY_THRESHOLD = 5;
+
+    private static HashMap<Integer, Movie> idToMovieMap;
 
     private String posterPath;
     private String backdropPath;
@@ -35,11 +38,14 @@ public class Movie {
         this.movieId = jsonObject.getInt("id");
     }
 
-    public static ArrayList<Movie> getMoviesFromJSONArray(JSONArray jsonArray){
+    public static ArrayList<Movie> getMoviesFromJSONArray(JSONArray jsonArray) {
+        if (idToMovieMap == null)idToMovieMap = new HashMap<>();
         ArrayList<Movie> movieResults =  new ArrayList<>();
         for(int i = 0; i < jsonArray.length() ; i++){
             try {
-                movieResults.add(new Movie(jsonArray.getJSONObject(i)));
+                Movie movie = new Movie(jsonArray.getJSONObject(i));
+                movieResults.add(movie);
+                idToMovieMap.put(movie.getMovieId(), movie);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -47,7 +53,7 @@ public class Movie {
         return movieResults;
     }
 
-    public ViewHolderType getPopularity() {
+    public ViewHolderType getViewHolderType() {
         if (this.stars >= POPULARITY_THRESHOLD) {
             return ViewHolderType.WITHOUT_DETAILS;
         }
@@ -62,6 +68,10 @@ public class Movie {
         return String.format("https://image.tmdb.org/t/p/w342%s",backdropPath);
     }
 
+    public static Movie getMovieForId(int movieId) {
+        return idToMovieMap.get(movieId);
+    }
+
     public String getMovieTitle() {
         return movieTitle;
     }
@@ -74,7 +84,7 @@ public class Movie {
         return stars;
     }
 
-    public String getReleaseDate(){return releaseDate;}
+    public String getReleaseDate() { return releaseDate; }
 
-    public int getMovieId(){return movieId;}
+    public int getMovieId() { return movieId; }
 }
