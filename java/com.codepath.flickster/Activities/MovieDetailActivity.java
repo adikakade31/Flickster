@@ -59,9 +59,7 @@ public class MovieDetailActivity extends YouTubeBaseActivity {
                     public void onInitializationSuccess(YouTubePlayer.Provider provider,
                                                         YouTubePlayer youTubePlayer, boolean b) {
 
-                        //youTubePlayer.cueVideo("hM_1oO5190g");
-                        youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
-                        youTubePlayer.cueVideo(fetchTrailerYouTubeUrl(movieId));
+                        playVideo(youTubePlayer, movieId);
                     }
                     @Override
                     public void onInitializationFailure(YouTubePlayer.Provider provider,
@@ -70,17 +68,18 @@ public class MovieDetailActivity extends YouTubeBaseActivity {
                     }
                 });
     }
-    private String fetchTrailerYouTubeUrl(int movieId){
+    private void playVideo(final YouTubePlayer youTubePlayer, int movieId){
         AsyncHttpClient client = new AsyncHttpClient();
-        String trailerURLPrefix = getResources().getString(R.string.trailer_url_prefix);
-        String trailerURLSuffix = getResources().getString(R.string.trailer_url_suffix);
-        String trailerURL = trailerURLPrefix + String.valueOf(movieId) + trailerURLSuffix;
+        String trailerURL = String.format("%s%s%s",getResources().getString(R.string.trailer_url_prefix)
+                ,String.valueOf(movieId)
+                ,getResources().getString(R.string.trailer_url_suffix));
         client.get(trailerURL, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     JSONObject jsonObject= response.getJSONArray(getResources().getString(R.string.youtube)).getJSONObject(0);
                     youTubeTrailerSource =  jsonObject.getString("source");
+                    youTubePlayer.cueVideo(youTubeTrailerSource);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -91,7 +90,6 @@ public class MovieDetailActivity extends YouTubeBaseActivity {
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
-        return youTubeTrailerSource;
 
     }
 }
